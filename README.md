@@ -25,21 +25,23 @@ For a detailed description of the structure, naming conventions, and specific va
 ## Project Organization
 
 ```
-├── ingestion_pipeline/    # Main package directory
-│   ├── cli.py             # CLI entry point and command definitions
-│   ├── ingestion.py       # Main ingestion logic
-│   ├── derived_indices.py # Derived indices computation logic
-│   ├── data/              # Data handling modules
-│   │   ├── download/      # CDS API request generation
-│   │   ├── preprocessing/ # Homogenization and standardization
+├── ingestion_pipeline/      # Main package directory
+│   ├── cli.py               # CLI entry point and command definitions
+│   ├── ingestion.py         # Main ingestion logic
+│   ├── derived_indices.py   # Derived indices computation logic
+│   ├── data/                # Data handling modules
+│   │   ├── download/        # CDS API request generation
+│   │   ├── preprocessing/   # Homogenization and standardization
 │   │   └── derived_indices/ # Index definitions and algorithms
-│   ├── resources/         # NUTS GeoJSON definitions
-│   └── utilities/         # S3, Zarr, and technical utils
-├── tests/                 # Unit and integration tests
-├── scripts/               # Helper scripts
-├── docs/                  # Documentation
-├── pixi.toml              # Pixi configuration and tasks
-└── pyproject.toml         # Project metadata and configuration
+│   ├── provenance/          # Retrospective provenance generation (RO-Crate)
+│   ├── publication/         # Publication to Zenodo
+│   ├── resources/           # NUTS GeoJSON definitions
+│   └── utilities/           # S3, Zarr, and technical utils
+├── tests/                   # Unit and integration tests
+├── scripts/                 # Helper scripts for data, provenance, and publication
+├── docs/                    # Documentation
+├── pixi.toml                # Pixi configuration and tasks
+└── pyproject.toml           # Project metadata and configuration
 ```
 
 ## Installation and Setup
@@ -154,17 +156,14 @@ pixi run ingestion-pipeline compute_derived_indices \
     --overwrite
 ```
 
-### Provenance
-
-Get a detailed provenance crate from the complete ingestion pipeline execution (`download` + `computed_derived_indices`). The output crate can be ava
+Get a detailed provenance crate from the complete ingestion pipeline execution (`download` + `computed_derived_indices`).
 
 ```bash
 pixi run ingestion-pipeline generate-crate \
     --workflow-spec <path-to-the-argo-specification>.yaml \
     --static-metadata-file <path-to-the-static-metadata-info>.yaml \
-    --output-crate-zip <path-to-store-the-crate>.zip \
     --rocrate-profile <rocrate-profile> \
-    --rocrate-gen-preview  <True|False> \ # Generate a HTML preview file for the crate
+    --rocrate-gen-preview \
     --output-crate-path <path-for-rocrate-folder> \
     --output-crate-zip <path-for-rocrate-zip> \
     --pattern <pattern>
@@ -173,8 +172,9 @@ pixi run ingestion-pipeline generate-crate \
 where:
 
 - `<path-to-the-argo-specification.yaml>` must adhere to [Argo Workflow templates](https://argo-workflows.readthedocs.io/en/latest/workflow-templates/).
-- `<path-to-the-yaml-static-metadata-info>` adheres to the format shown in the [sample configuration](./ingestion_pipeline/provenance/config/provenance_metadata_static_info.yaml.sample).
-- `<rocrate-profile>` allows to select among the two RO-Crate profiles to generate the provenance of the workflow run, either `workflow-run-crate-0.5` or `provenance-run-crate-0.5`. The identifier complies with the [rocrate-validate profiles command](https://github.com/crs4/rocrate-validator).
+- `<path-to-the-yaml-static-metadata-info>` adheres to the format shown in the [sample configuration](ingestion_pipeline/provenance/config/provenance_metadata_static_info.yaml.sample).
+- `<rocrate-profile>` allows selecting between the two RO-Crate profiles to generate the provenance of the workflow run, either `workflow-run-crate-0.5` or `provenance-run-crate-0.5`. The identifier complies with the [rocrate-validate profiles command](https://github.com/crs4/rocrate-validator).
+- `--rocrate-gen-preview` is a flag to generate an HTML preview file for the crate.
 - `<pattern>` is the pattern to match S3 objects for publishing (default: `"*_NUTS*.zarr"`).
 
 #### Argo server credentials
@@ -190,19 +190,22 @@ ARGO_INSECURE_SKIP_VERIFY=false
 ARGO_WORKFLOW="<workflow-name>"
 ```
 
-### Publication
-
 Publish dataset results (data and provenance metadata) to Zenodo (requires `generate-crate`).
 
 ```bash
 pixi run ingestion-pipeline publish-to-zenodo \
     --provenance-crate-zip <path-to-the-crate>.zip \
-    --zenodo-token <token>
+    --zenodo-token <token> \
+    --sandbox \
+    --title "My Dataset Title"
 ```
 
 where:
 
-- `path-to-the-crate>.zip` points to the provenance crate in zip format resulting from the [`generate-crate` command above](#provenance).
+- `--provenance-crate-zip` points to the provenance crate in zip format resulting from the [`generate-crate` command above](#provenance).
+- `--zenodo-token` is your Zenodo API personal access token.
+- `--sandbox` is a flag to use the Zenodo Sandbox environment (default).
+- `--title` allows specifying a title for the Zenodo deposition.
 
 ## License
 

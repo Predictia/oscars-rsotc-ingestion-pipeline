@@ -82,7 +82,44 @@ docker run --rm \
   --overwrite
 ```
 
+## 3. Generate Provenance Crate
+
+To generate an RO-Crate for the workflow execution, you need the workflow specification and static metadata.
+
+```bash
+docker run --rm \
+  -e S3_ENDPOINT_URL="https://s3.eu-north-1.predictia.es" \
+  -e S3_REGION="garage" \
+  -e S3_BUCKET_NAME="oscars-test" \
+  -e S3_ACCESS_KEY="YOUR_ACCESS_KEY" \
+  -e S3_SECRET_KEY="YOUR_SECRET_KEY" \
+  -e ARGO_SERVER="your-argo-server" \
+  -e ARGO_TOKEN="your-token" \
+  -v $(pwd)/data:/data \
+  -v $(pwd)/templates:/templates \
+  ingestion-pipeline:latest \
+  generate-crate \
+  --workflow-spec "/templates/argo/workflow-template.yaml" \
+  --output-crate-zip "/data/provenance_crate.zip" \
+  --rocrate-gen-preview
+```
+
+## 4. Publish to Zenodo
+
+Once you have the provenance crate, you can publish it to Zenodo.
+
+```bash
+docker run --rm \
+  -e ZENODO_TOKEN="YOUR_ZENODO_TOKEN" \
+  -v $(pwd)/data:/data \
+  ingestion-pipeline:latest \
+  publish-to-zenodo \
+  --provenance-crate-zip "/data/provenance_crate.zip" \
+  --sandbox \
+  --title "Regional State of the Climate Data"
+```
+
 ## Notes
 
-- The entrypoint of the Docker image is already set to `pixi run`, so the commands after the image name (`download`, `compute_derived_indices`) are passed directly to the `ingestion-pipeline` CLI.
+- The entrypoint of the Docker image is already set to `pixi run`, so the commands after the image name (`download`, `compute_derived_indices`, `generate-crate`, `publish-to-zenodo`) are passed directly to the `ingestion-pipeline` CLI.
 - Ensure the local `data` directory exists before running the command, or Docker might create it with root permissions.
