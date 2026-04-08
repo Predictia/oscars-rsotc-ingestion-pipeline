@@ -1,0 +1,34 @@
+workflow:
+  authors:
+  {%- for author in author_list %}
+  - name: {{ author.name }}
+    email: {{ author.email }}
+    orcid: {{ author.orcid }}
+    affiliation: {{ author.affiliation }}
+    agent: {{ author.agent }}
+  {%- endfor %}
+  runs:
+  {%- for download_variable in download_variable_list %}
+    - name: download-{{ download_variable }}
+      tool: download-task
+      inputs:
+      - name: variable
+        value: {{ download_variable }}
+      artifacts:
+      {%- for nuts_level in range(0, nuts_levels) %}
+      - dest_path: ./out/{{ download_variable }}_ERA5_NUTS-{{ nuts_level }}.zarr
+        name: {{ download_variable }}_ERA5_NUTS-{{ nuts_level }}.zarr
+      {%- endfor %}
+  {%- endfor %}
+  {%- for compute_indice in compute_indice_list %}
+    - name: compute-{{ compute_indice }}
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: {{ compute_indice }}
+      artifacts:
+      {%- for nuts_level in range(0, nuts_levels) %}
+      - dest_path: ./out/{{ compute_indice }}_None_ERA5_NUTS-{{ nuts_level }}.zarr
+        name: {{ compute_indice }}_None_ERA5_NUTS-{{ nuts_level }}.zarr
+      {%- endfor %}
+  {%- endfor %}

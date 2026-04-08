@@ -1,0 +1,273 @@
+workflow:
+  authors:
+  - name: Antonio Pérez
+    email: aperez@predictia.es
+    orcid: 0000-0002-0250-1461
+    affiliation: Predictia Intelligent Data Solutions S.L.
+    agent: true
+  - name: Pablo Orviz Fernández
+    email: orviz@ifca.unican.es
+    orcid: 0000-0002-2473-6405
+    affiliation: Consejo Superior de Investigaciones Científicas (CSIC)
+    agent: false
+  organizations:
+  - name: predictia
+    full_name: Predictia Intelligent Data Solutions S.L.
+    role: creator
+  - name: csic
+    full_name: Consejo Superior de Investigaciones Científicas (CSIC)
+    role: contributor
+  license: "https://spdx.org/licenses/Apache-2.0.html"
+  runs:
+    - name: download-tas
+      tool: download-task
+      inputs:
+      - name: variable
+        value: tas_None
+      artifacts:
+      - dest_path: ./out/tas_None_ERA5_NUTS-0.zarr
+        name: tas_None_ERA5_NUTS-0.zarr
+        description: "Mean air temperature at 2 metre (tas) country-level data."
+      - dest_path: ./out/tas_None_ERA5_NUTS-1.zarr
+        name: tas_None_ERA5_NUTS-1.zarr
+        description: "Mean air temperature at 2 metre (tas) major socio-economic regions data."
+      - dest_path: ./out/tas_None_ERA5_NUTS-2.zarr
+        name: tas_None_ERA5_NUTS-2.zarr
+        description: "Mean air temperature at 2 metre (tas) basic regions data for regional policies."
+      - dest_path: ./out/tas_None_ERA5_NUTS-3.zarr
+        name: tas_None_ERA5_NUTS-3.zarr
+        description: "Mean air temperature at 2 metre (tas) small regions data for specific diagnoses."
+    - name: download-tasmax
+      tool: download-task
+      inputs:
+      - name: variable
+        value: tasmax_None
+      artifacts:
+      - dest_path: ./out/tasmax_None_ERA5_NUTS-0.zarr
+        name: tasmax_None_ERA5_NUTS-0.zarr
+        description: "Maximum air temperature at 2 metre (tasmax) country-level data."
+      - dest_path: ./out/tasmax_None_ERA5_NUTS-1.zarr
+        name: tasmax_None_ERA5_NUTS-1.zarr
+        description: "Maximum air temperature at 2 metre (tasmax) major socio-economic regions data."
+      - dest_path: ./out/tasmax_None_ERA5_NUTS-2.zarr
+        name: tasmax_None_ERA5_NUTS-2.zarr
+        description: "Maximum air temperature at 2 metre (tasmax) basic regions data for regional policies."
+      - dest_path: ./out/tasmax_None_ERA5_NUTS-3.zarr
+        name: tasmax_None_ERA5_NUTS-3.zarr
+        description: "Maximum air temperature at 2 metre (tasmax) small regions data for specific diagnoses."
+    - name: download-tasmin
+      tool: download-task
+      inputs:
+      - name: variable
+        value: tasmin_None
+      artifacts:
+      - dest_path: ./out/tasmin_None_ERA5_NUTS-0.zarr
+        name: tasmin_None_ERA5_NUTS-0.zarr
+        description: "Minimum air temperature at 2 metre (tasmin) country-level data."
+      - dest_path: ./out/tasmin_None_ERA5_NUTS-1.zarr
+        name: tasmin_None_ERA5_NUTS-1.zarr
+        description: "Minimum air temperature at 2 metre (tasmax) major socio-economic regions data."
+      - dest_path: ./out/tasmin_None_ERA5_NUTS-2.zarr
+        name: tasmin_None_ERA5_NUTS-2.zarr
+        description: "Minimum air temperature at 2 metre (tasmax) basic regions data for regional policies."
+      - dest_path: ./out/tasmin_None_ERA5_NUTS-3.zarr
+        name: tasmin_None_ERA5_NUTS-3.zarr
+        description: "Minimum air temperature at 2 metre (tasmax) small regions data for specific diagnoses."
+    - name: download-pr
+      tool: download-task
+      inputs:
+      - name: variable
+        value: pr_None
+      artifacts:
+      - dest_path: ./out/pr_None_ERA5_NUTS-0.zarr
+        name: pr_None_ERA5_NUTS-0.zarr
+        description: "Total accumulated liquid and frozen precipitation (pr) country-level data."
+      - dest_path: ./out/pr_None_ERA5_NUTS-1.zarr
+        name: pr_None_ERA5_NUTS-1.zarr
+        description: "Total accumulated liquid and frozen precipitation (pr) major socio-economic regions data."
+      - dest_path: ./out/pr_None_ERA5_NUTS-2.zarr
+        name: pr_None_ERA5_NUTS-2.zarr
+        description: "Total accumulated liquid and frozen precipitation (pr) basic regions data for regional policies."
+      - dest_path: ./out/pr_None_ERA5_NUTS-3.zarr
+        name: pr_None_ERA5_NUTS-3.zarr
+        description: "Total accumulated liquid and frozen precipitation (pr) small regions data for specific diagnoses."
+    - name: download-sfcWind
+      tool: download-task
+      inputs:
+      - name: variable
+        value: sfcWind_None
+      artifacts:
+      - dest_path: ./out/sfcWind_None_ERA5_NUTS-0.zarr
+        name: sfcWind_None_ERA5_NUTS-0.zarr
+        description: "Magnitude of the horizontal wind vector at 10 metre (sfcWind) country-level data."
+      - dest_path: ./out/sfcWind_None_ERA5_NUTS-1.zarr
+        name: sfcWind_None_ERA5_NUTS-1.zarr
+        description: "Magnitude of the horizontal wind vector at 10 metre (sfcWind) major socio-economic regions data."
+      - dest_path: ./out/sfcWind_None_ERA5_NUTS-2.zarr
+        name: sfcWind_None_ERA5_NUTS-2.zarr
+        description: "Magnitude of the horizontal wind vector at 10 metre (sfcWind) basic regions data for regional policies."
+      - dest_path: ./out/sfcWind_None_ERA5_NUTS-3.zarr
+        name: sfcWind_None_ERA5_NUTS-3.zarr
+        description: "Magnitude of the horizontal wind vector at 10 metre (sfcWind) small regions data for specific diagnoses."
+    - name: compute-tx30
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: tx30
+      artifacts:
+      - dest_path: ./out/tx30_None_ERA5_NUTS-0.zarr
+        name: tx30_None_ERA5_NUTS-0.zarr
+        description: "Number of days when tasmax > 30 °C (tx30) country-level data."
+      - dest_path: ./out/tx30_None_ERA5_NUTS-1.zarr
+        name: tx30_None_ERA5_NUTS-1.zarr
+        description: "Number of days when tasmax > 30 °C (tx30) major socio-economic regions data."
+      - dest_path: ./out/tx30_ERA5_NUTS-2.zarr
+        name: tx30_None_ERA5_NUTS-2.zarr
+        description: "Number of days when tasmax > 30 °C (tx30) basic regions data for regional policies."
+      - dest_path: ./out/tx30_None_ERA5_NUTS-3.zarr
+        name: tx30_None_ERA5_NUTS-3.zarr
+        description: "Number of days when tasmax > 30 °C (tx30) small regions data for specific diagnoses."
+    - name: compute-tx35
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: tx35
+      artifacts:
+      - dest_path: ./out/tx35_None_ERA5_NUTS-0.zarr
+        name: tx35_None_ERA5_NUTS-0.zarr
+        description: "Number of days when tasmax > 35 °C (tx35) country-level data."
+      - dest_path: ./out/tx35_None_ERA5_NUTS-1.zarr
+        name: tx35_None_ERA5_NUTS-1.zarr
+        description: "Number of days when tasmax > 35 °C (tx35) major socio-economic regions data."
+      - dest_path: ./out/tx35_None_ERA5_NUTS-2.zarr
+        name: tx35_None_ERA5_NUTS-2.zarr
+        description: "Number of days when tasmax > 35 °C (tx35) basic regions data for regional policies."
+      - dest_path: ./out/tx35_None_ERA5_NUTS-3.zarr
+        name: tx35_None_ERA5_NUTS-3.zarr
+        description: "Number of days when tasmax > 35 °C (tx35) small regions data for specific diagnoses."
+    - name: compute-tx40_None_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: tx40
+      artifacts:
+      - dest_path: ./out/tx40_None_ERA5_NUTS-0.zarr
+        name: tx40_None_ERA5_NUTS-0.zarr
+        description: "Number of days when tasmax > 40 °C (tx40) country-level data."
+      - dest_path: ./out/tx40_None_ERA5_NUTS-1.zarr
+        name: tx40_None_ERA5_NUTS-1.zarr
+        description: "Number of days when tasmax > 40 °C (tx40) major socio-economic regions data."
+      - dest_path: ./out/tx40_None_ERA5_NUTS-2.zarr
+        name: tx40_None_ERA5_NUTS-2.zarr
+        description: "Number of days when tasmax > 40 °C (tx40) basic regions data for regional policies."
+      - dest_path: ./out/tx40_None_ERA5_NUTS-3.zarr
+        name: tx40_None_ERA5_NUTS-3.zarr
+        description: "Number of days when tasmax > 40 °C (tx40) small regions data for specific diagnoses."
+    - name: compute-tr20_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: tr20
+      artifacts:
+      - dest_path: ./out/tr20_None_ERA5_NUTS-0.zarr
+        name: tr20_None_ERA5_NUTS-0.zarr
+        description: "Number of nights when tasmin > 20 °C (tr20) country-level data."
+      - dest_path: ./out/tr20_None_ERA5_NUTS-1.zarr
+        name: tr20_None_ERA5_NUTS-1.zarr
+        description: "Number of nights when tasmin > 20 °C (tr20) major socio-economic regions data."
+      - dest_path: ./out/tr20_None_ERA5_NUTS-2.zarr
+        name: tr20_None_ERA5_NUTS-2.zarr
+        description: "Number of nights when tasmin > 20 °C (tr20) basic regions data for regional policies."
+      - dest_path: ./out/tr20_None_ERA5_NUTS-3.zarr
+        name: tr20_None_ERA5_NUTS-3.zarr
+        description: "Number of nights when tasmin > 20 °C (tr20) small regions data for specific diagnoses."
+    - name: compute-tr25_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: tr25
+      artifacts:
+      - dest_path: ./out/tr25_None_ERA5_NUTS-0.zarr
+        name: tr25_None_ERA5_NUTS-0.zarr
+        description: "Number of nights when tasmin > 25 °C (tr25) country-level data."
+      - dest_path: ./out/tr25_None_ERA5_NUTS-1.zarr
+        name: tr25_None_ERA5_NUTS-1.zarr
+        description: "Number of nights when tasmin > 25 °C (tr25) major socio-economic regions data."
+      - dest_path: ./out/tr25_None_ERA5_NUTS-2.zarr
+        name: tr25_None_ERA5_NUTS-2.zarr
+        description: "Number of nights when tasmin > 25 °C (tr25) basic regions data for regional policies."
+      - dest_path: ./out/tr25_None_ERA5_NUTS-3.zarr
+        name: tr25_None_ERA5_NUTS-3.zarr
+        description: "Number of nights when tasmin > 25 °C (tr25) small regions data for specific diagnoses."
+    - name: compute-fd_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: fd
+      artifacts:
+      - dest_path: ./out/fd_None_ERA5_NUTS-0.zarr
+        name: fd_None_ERA5_NUTS-0.zarr
+        description: "Number of days when tasmin < 0 °C (fd) country-level data."
+      - dest_path: ./out/fd_None_ERA5_NUTS-1.zarr
+        name: fd_None_ERA5_NUTS-1.zarr
+        description: "Number of days when tasmin < 0 °C (fd) major socio-economic regions data."
+      - dest_path: ./out/fd_None_ERA5_NUTS-2.zarr
+        name: fd_None_ERA5_NUTS-2.zarr
+        description: "Number of days when tasmin < 0 °C (fd) basic regions data for regional policies."
+      - dest_path: ./out/fd_None_ERA5_NUTS-3.zarr
+        name: fd_None_ERA5_NUTS-3.zarr
+        description: "Number of days when tasmin < 0 °C (fd) small regions data for specific diagnoses."
+    - name: compute-r20mm_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: r20mm
+      artifacts:
+      - dest_path: ./out/r20mm_None_ERA5_NUTS-0.zarr
+        name: r20mm_None_ERA5_NUTS-0.zarr
+        description: "Number of days when pr ≥ 20 mm (r20mm) country-level data."
+      - dest_path: ./out/r20mm_None_ERA5_NUTS-1.zarr
+        name: r20mm_None_ERA5_NUTS-1.zarr
+        description: "Number of days when pr ≥ 20 mm (r20mm) major socio-economic regions data."
+      - dest_path: ./out/r20mm_None_ERA5_NUTS-2.zarr
+        name: r20mm_None_ERA5_NUTS-2.zarr
+        description: "Number of days when pr ≥ 20 mm (r20mm) basic regions data for regional policies."
+      - dest_path: ./out/r20mm_None_ERA5_NUTS-3.zarr
+        name: r20mm_None_ERA5_NUTS-3.zarr
+        description: "Number of days when pr ≥ 20 mm (r20mm) small regions data for specific diagnoses."
+    - name: compute-r1mm_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: r1mm
+      artifacts:
+      - dest_path: ./out/r1mm_None_ERA5_NUTS-0.zarr
+        name: r1mm_None_ERA5_NUTS-0.zarr
+        description: "Number of days when pr ≥ 1 mm (r1mm) country-level data."
+      - dest_path: ./out/r1mm_None_ERA5_NUTS-1.zarr
+        name: r1mm_None_ERA5_NUTS-1.zarr
+        description: "Number of days when pr ≥ 1 mm (r1mm) major socio-economic regions data."
+      - dest_path: ./out/r1mm_None_ERA5_NUTS-2.zarr
+        name: r1mm_None_ERA5_NUTS-2.zarr
+        description: "Number of days when pr ≥ 1 mm (r1mm) basic regions data for regional policies."
+      - dest_path: ./out/r1mm_None_ERA5_NUTS-3.zarr
+        name: r1mm_None_ERA5_NUTS-3.zarr
+        description: "Number of days when pr ≥ 1 mm (r1mm) small regions data for specific diagnoses."
+    - name: compute-r95ptot_None
+      tool: compute-task
+      inputs:
+      - name: indice
+        value: r95ptot
+      artifacts:
+      - dest_path: ./out/r95ptot_None_ERA5_NUTS-0.zarr
+        name: r95ptot_None_ERA5_NUTS-0.zarr
+        description: "Precipitation from days > 95th percentile relative to total (r95plot) country-level data."
+      - dest_path: ./out/r95ptot_None_ERA5_NUTS-1.zarr
+        name: r95ptot_None_ERA5_NUTS-1.zarr
+        description: "Precipitation from days > 95th percentile relative to total (r95plot) major socio-economic regions data."
+      - dest_path: ./out/r95ptot_None_ERA5_NUTS-2.zarr
+        name: r95ptot_None_ERA5_NUTS-2.zarr
+        description: "Precipitation from days > 95th percentile relative to total (r95plot) basic regions data for regional policies."
+      - dest_path: ./out/r95ptot_None_ERA5_NUTS-3.zarr
+        name: r95ptot_None_ERA5_NUTS-3.zarr
+        description: "Precipitation from days > 95th percentile relative to total (r95plot) small regions data for specific diagnoses."

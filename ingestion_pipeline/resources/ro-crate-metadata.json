@@ -1,0 +1,501 @@
+{
+    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@graph": [
+        {
+            "@id": "./",
+            "@type": "Dataset",
+            "datePublished": "2026-01-28T11:35:03+00:00",
+            "description": "A crate containing the provenance of the ERA ingestion pipeline runs (tas, tasmax, tasmin, pr, sfcWind).",
+            "hasPart": [
+                {
+                    "@id": "scripts/download_data_era5.py"
+                }
+            ],
+            "license": "https://spdx.org/licenses/Apache-2.0.html",
+            "mainEntity": {
+                "@id": "scripts/download_data_era5.py"
+            },
+            "mentions": [
+                {
+                    "@id": "era5-ingestion-pipeline-run-tas-action"
+                }
+            ],
+            "name": "ERA5 Ingestion Pipeline Crate"
+        },
+        {
+            "@id": "ro-crate-metadata.json",
+            "@type": "CreativeWork",
+            "about": {
+                "@id": "./"
+            },
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/ro/crate/1.1"
+                },
+                {
+                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+                }
+            ]
+        },
+        {
+            "@id": "#python",
+            "@type": "ComputerLanguage",
+            "name": "Python",
+            "url": "https://www.python.org/",
+            "version": "3.11.14"
+        },
+        {
+            "@id": "scripts/download_data_era5.py",
+            "@type": [
+                "File",
+                "SoftwareSourceCode",
+                "ComputationalWorkflow"
+            ],
+            "contentSize": 2172,
+            "description": "Ingestion pipeline script to download ERA5 dataset.",
+            "encodingFormat": "text/x-python",
+            "input": [
+                {
+                    "@id": "#dataset-input_param"
+                },
+                {
+                    "@id": "#variable-input_param"
+                },
+                {
+                    "@id": "#area-input_param"
+                },
+                {
+                    "@id": "#start_date-input_param"
+                },
+                {
+                    "@id": "#end_date-input_param"
+                },
+                {
+                    "@id": "#max_workers-input_param"
+                },
+                {
+                    "@id": "#saving_temporal_aggregation-input_param"
+                },
+                {
+                    "@id": "#saving_main_directory-input_param"
+                },
+                {
+                    "@id": "#saving_chunks_size-input_param"
+                },
+                {
+                    "@id": "#overwrite-input_param"
+                }
+            ],
+            "name": "Download ERA5 Ingestion Pipeline",
+            "programmingLanguage": {
+                "@id": "#python"
+            }
+        },
+        {
+            "@id": "#dataset-input_param",
+            "@type": "FormalParameter",
+            "description": "Dataset name (e.g., \"reanalysis-era5-single-levels\").",
+            "name": "dataset"
+        },
+        {
+            "@id": "#variable-input_param",
+            "@type": "FormalParameter",
+            "description": "Variable to download defined as {variable_name}_{pressure_level}.",
+            "name": "variable"
+        },
+        {
+            "@id": "#area-input_param",
+            "@type": "FormalParameter",
+            "description": "Spatial subset [North, West, South, East].",
+            "name": "area"
+        },
+        {
+            "@id": "#start_date-input_param",
+            "@type": "FormalParameter",
+            "description": "Start date for data downloads (YYYY-MM-DD).",
+            "name": "start_date"
+        },
+        {
+            "@id": "#end_date-input_param",
+            "@type": "FormalParameter",
+            "description": "End date for data downloads (YYYY-MM-DD).",
+            "name": "end_date"
+        },
+        {
+            "@id": "#max_workers-input_param",
+            "@type": "FormalParameter",
+            "description": "Maximum number of threads for parallel downloads.",
+            "name": "max_workers"
+        },
+        {
+            "@id": "#saving_temporal_aggregation-input_param",
+            "@type": "FormalParameter",
+            "description": "Temporal aggregation (daily, monthly, or yearly).",
+            "name": "saving_temporal_aggregation"
+        },
+        {
+            "@id": "#saving_main_directory-input_param",
+            "@type": "FormalParameter",
+            "description": "Directory to save downloaded files.",
+            "name": "saving_main_directory"
+        },
+        {
+            "@id": "#saving_chunks_size-input_param",
+            "@type": "FormalParameter",
+            "description": "Dask chunking scheme. If None, uses default chunking logic.",
+            "name": "saving_chunks_size"
+        },
+        {
+            "@id": "#overwrite-input_param",
+            "@type": "FormalParameter",
+            "description": "Whether to overwrite existing files.",
+            "name": "overwrite"
+        },
+        {
+            "@id": "era5-ingestion-pipeline-run-tas-action",
+            "@type": "CreateAction",
+            "instrument": {
+                "@id": "scripts/download_data_era5.py"
+            },
+            "name": "Running ERA5IngestionPipeline for variable: tas",
+            "object": [
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::dataset-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::variable-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::pressure_level-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::area-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::start_date-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::end_date-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::max_workers-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::saving_temporal_aggregation-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::saving_main_directory-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::saving_chunk_size-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::s3_dir-input_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::overwrite-input_value"
+                }
+            ],
+            "result": [
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_gridded.zarr-output_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-0.zarr-output_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-1.zarr-output_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-2.zarr-output_value"
+                },
+                {
+                    "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-3.zarr-output_value"
+                }
+            ],
+            "startTime": "2026-01-27T12:30:08.238828+00:00"
+        },
+        {
+            "@id": "#dataset-input_param",
+            "@type": "FormalParameter",
+            "name": "dataset"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::dataset-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#dataset-input_param"
+                }
+            ],
+            "name": "dataset",
+            "value": "derived-era5-single-levels-daily-statistics"
+        },
+        {
+            "@id": "#variable-input_param",
+            "@type": "FormalParameter",
+            "name": "variable"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::variable-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#variable-input_param"
+                }
+            ],
+            "name": "variable",
+            "value": "tas"
+        },
+        {
+            "@id": "#pressure_level-input_param",
+            "@type": "FormalParameter",
+            "name": "pressure_level"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::pressure_level-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#pressure_level-input_param"
+                }
+            ],
+            "name": "pressure_level",
+            "value": "None"
+        },
+        {
+            "@id": "#area-input_param",
+            "@type": "FormalParameter",
+            "name": "area"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::area-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#area-input_param"
+                }
+            ],
+            "name": "area",
+            "value": "[75, -30, 30, 50]"
+        },
+        {
+            "@id": "#start_date-input_param",
+            "@type": "FormalParameter",
+            "name": "start_date"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::start_date-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#start_date-input_param"
+                }
+            ],
+            "name": "start_date",
+            "value": "1940-01-01"
+        },
+        {
+            "@id": "#end_date-input_param",
+            "@type": "FormalParameter",
+            "name": "end_date"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::end_date-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#end_date-input_param"
+                }
+            ],
+            "name": "end_date",
+            "value": "2024-12-31"
+        },
+        {
+            "@id": "#max_workers-input_param",
+            "@type": "FormalParameter",
+            "name": "max_workers"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::max_workers-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#max_workers-input_param"
+                }
+            ],
+            "name": "max_workers",
+            "value": "4"
+        },
+        {
+            "@id": "#saving_temporal_aggregation-input_param",
+            "@type": "FormalParameter",
+            "name": "saving_temporal_aggregation"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::saving_temporal_aggregation-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#saving_temporal_aggregation-input_param"
+                }
+            ],
+            "name": "saving_temporal_aggregation",
+            "value": "monthly"
+        },
+        {
+            "@id": "#saving_main_directory-input_param",
+            "@type": "FormalParameter",
+            "name": "saving_main_directory"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::saving_main_directory-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#saving_main_directory-input_param"
+                }
+            ],
+            "name": "saving_main_directory",
+            "value": "/tmp/data/oscars-rsotc"
+        },
+        {
+            "@id": "#saving_chunk_size-input_param",
+            "@type": "FormalParameter",
+            "name": "saving_chunk_size"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::saving_chunk_size-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#saving_chunk_size-input_param"
+                }
+            ],
+            "name": "saving_chunk_size",
+            "value": "{'time': 500, 'lat': 50, 'lon': 50}"
+        },
+        {
+            "@id": "#s3_dir-input_param",
+            "@type": "FormalParameter",
+            "name": "s3_dir"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::s3_dir-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#s3_dir-input_param"
+                }
+            ],
+            "name": "s3_dir",
+            "value": ""
+        },
+        {
+            "@id": "#overwrite-input_param",
+            "@type": "FormalParameter",
+            "name": "overwrite"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::overwrite-input_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#overwrite-input_param"
+                }
+            ],
+            "name": "overwrite",
+            "value": "False"
+        },
+        {
+            "@id": "#aggregated::tas_None_ERA5_gridded.zarr-output_param",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "contentUrl": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_gridded.zarr",
+            "name": "aggregated::tas_None_ERA5_gridded.zarr"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_gridded.zarr-output_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#aggregated::tas_None_ERA5_gridded.zarr-output_param"
+                }
+            ],
+            "name": "aggregated::tas_None_ERA5_gridded.zarr",
+            "value": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_gridded.zarr"
+        },
+        {
+            "@id": "#aggregated::tas_None_ERA5_NUTS-0.zarr-output_param",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "contentUrl": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-0.zarr",
+            "name": "aggregated::tas_None_ERA5_NUTS-0.zarr"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-0.zarr-output_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#aggregated::tas_None_ERA5_NUTS-0.zarr-output_param"
+                }
+            ],
+            "name": "aggregated::tas_None_ERA5_NUTS-0.zarr",
+            "value": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-0.zarr"
+        },
+        {
+            "@id": "#aggregated::tas_None_ERA5_NUTS-1.zarr-output_param",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "contentUrl": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-1.zarr",
+            "name": "aggregated::tas_None_ERA5_NUTS-1.zarr"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-1.zarr-output_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#aggregated::tas_None_ERA5_NUTS-1.zarr-output_param"
+                }
+            ],
+            "name": "aggregated::tas_None_ERA5_NUTS-1.zarr",
+            "value": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-1.zarr"
+        },
+        {
+            "@id": "#aggregated::tas_None_ERA5_NUTS-2.zarr-output_param",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "contentUrl": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-2.zarr",
+            "name": "aggregated::tas_None_ERA5_NUTS-2.zarr"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-2.zarr-output_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#aggregated::tas_None_ERA5_NUTS-2.zarr-output_param"
+                }
+            ],
+            "name": "aggregated::tas_None_ERA5_NUTS-2.zarr",
+            "value": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-2.zarr"
+        },
+        {
+            "@id": "#aggregated::tas_None_ERA5_NUTS-3.zarr-output_param",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "contentUrl": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-3.zarr",
+            "name": "aggregated::tas_None_ERA5_NUTS-3.zarr"
+        },
+        {
+            "@id": "#era5-ingestion-pipeline-run-tas-action::aggregated::tas_None_ERA5_NUTS-3.zarr-output_value",
+            "@type": "PropertyValue",
+            "exampleOfWork": [
+                {
+                    "@id": "#aggregated::tas_None_ERA5_NUTS-3.zarr-output_param"
+                }
+            ],
+            "name": "aggregated::tas_None_ERA5_NUTS-3.zarr",
+            "value": "/tmp/data/oscars-rsotc/aggregate/tas_None_ERA5_NUTS-3.zarr"
+        }
+    ]
+}

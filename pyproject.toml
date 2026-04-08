@@ -1,0 +1,98 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=45"]
+
+[project]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering"
+]
+dependencies = [
+  "boto3<1.36",
+  "botocore<1.36",
+  "cdsapi>=0.7.2",
+  "cftime",
+  "click",
+  "dask",
+  "fsspec",
+  "netcdf4",
+  "python-dotenv",
+  "eccodes",
+  "s3fs",
+  "zarr<3",
+  "geopandas",
+  "regionmask",
+  "h5netcdf",
+  "pydantic",
+  "pydantic-settings",
+  "markdown",
+  "xclim==0.59.0",
+  "numpy<2.0.0",
+  "xarray==2025.9.0",
+  "xsdba",
+  "python-json-logger==2.0.7",
+  "rocrate==0.14.2",
+  "griffe"
+]
+description = "Pipeline to download and homogenize OSCARS-RSOTC data"
+license = {file = "LICENSE"}
+name = "oscars-rsotc-ingestion-pipeline"
+readme = "README.md"
+version = "1.0.0"
+
+[project.scripts]
+ingestion-pipeline = "ingestion_pipeline.cli:cli"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.0.0"
+version_files = ["pyproject.toml:version"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.mypy]
+exclude = ["tests", "docs", "build"]
+ignore_missing_imports = true
+strict = false
+
+[tool.pytest.ini_options]
+log_cli = true
+log_level = "INFO"
+testpaths = ["tests/unit"]
+
+[tool.ruff]
+# Same as Black.
+line-length = 88
+
+[tool.ruff.lint]
+ignore = [
+  # pydocstyle: Missing Docstrings
+  "D1"
+]
+select = [
+  # pyflakes
+  "F",
+  # pycodestyle
+  "E",
+  "W",
+  # isort
+  "I",
+  # pydocstyle
+  "D"
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 110
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.setuptools]
+packages = ["ingestion_pipeline"]

@@ -1,0 +1,78 @@
+[dependencies]
+boto3 = "<1.36"
+botocore = "<1.36"
+cdsapi = ">=0.7.2"
+cftime = "*"
+click = "*"
+dask = "*"
+fsspec = "*"
+geopandas = "*"
+griffe = "*"
+h5netcdf = "*"
+hera = ">=5.18.0,<6"
+markdown = "*"
+netcdf4 = "*"
+numpy = "<2.0.0"
+pip = "*"
+pre-commit = ">=4.5.1,<5"
+pydantic = "*"
+pydantic-settings = "*"
+python = "==3.11"
+python-eccodes = "*"
+python-json-logger = "==2.0.7"
+regionmask = "*"
+rocrate = "==0.14.2"
+s3fs = ">=2024.1.0"
+tenacity = ">=9.1.4,<10"
+xarray = "==2025.9.0"
+xclim = "==0.59.0"
+xsdba = "*"
+zarr = "<3"
+
+[environments]
+default = {features = [], solve-group = "default"}
+dev = {features = ["dev"], solve-group = "default"}
+docs = {features = ["docs"], solve-group = "default"}
+
+[feature.dev.dependencies]
+commitizen = "*"
+mypy = "*"
+pre-commit = "*"
+pytest = "*"
+pytest-cov = "*"
+ruff = "*"
+types-markdown = ">=3.10.2.20260211,<4"
+types-requests = ">=2.32.4.20260107,<3"
+
+[feature.docs.dependencies]
+myst-parser = ">=5.0.0,<6"
+nbsphinx = ">=0.9.8,<0.10"
+sphinx = ">=8.2.3,<9"
+sphinx-autoapi = ">=3.6.1,<4"
+sphinx-rtd-theme = ">=3.1.0,<4"
+
+[feature.docs.tasks]
+docs-build = "cp README.md docs/. && sed -i 's|docs/_static/logo.png|_static/logo.png|g' docs/README.md && cd docs && rm -fr _api && make clean && make html"
+
+[pypi-dependencies]
+oscars-rsotc-ingestion-pipeline = {path = "./", editable = true}
+
+[pypi-options]
+index-url = "https://pypi.org/simple"
+
+[tasks]
+bumpversion-major = "cz bump --increment major"
+bumpversion-minor = "cz bump --increment minor"
+bumpversion-patch = "cz bump --increment patch"
+default = {depends-on = ["qa", "unit-tests", "type-check"]}
+docker-build = "docker build -t ingestion_pipeline ."
+docker-run = "docker run --rm -ti -v $(pwd):/srv ingestion_pipeline"
+qa = "pre-commit run --all-files"
+template-update = "pre-commit run --all-files cruft -c .pre-commit-config-cruft.yaml"
+type-check = "python -m mypy ."
+unit-tests = "python -m pytest -vv --cov=. --cov-report=html --doctest-glob='*.md' --doctest-glob='*.rst' tests/unit"
+
+[workspace]
+channels = ["conda-forge"]
+name = "oscars-rsotc-ingestion-pipeline"
+platforms = ["linux-64"]

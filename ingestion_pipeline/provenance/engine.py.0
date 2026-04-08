@@ -1,0 +1,44 @@
+from abc import ABC, abstractmethod
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class WorkflowEngine(ABC):
+    """Blueprint class to execute a workflow and extract information from the execution."""
+
+    @abstractmethod
+    def _connect(self):
+        """Connect to the workflow endpoint."""
+        pass
+
+
+class ArgoWorkflowEngine(WorkflowEngine):
+    """
+    Information provider for Argo workflow executions.
+
+    Parameters
+    ----------
+    endpoint : str
+        Argo workflow endpoint.
+    """
+
+    def __init__(self, name: str, namespace: str, endpoint: str, token: str = None):
+        self.workflow_name = name
+        self.workflow_namespace = namespace
+        self.endpoint = endpoint
+        self.token = token
+        self.api_client = self._connect()
+        self.workflow_obj = self.api_client.get_workflow(self.workflow_name, self.workflow_namespace)
+
+    def _connect(self):
+        """Connect to the Argo workflow endpoint."""
+        from hera.workflows import WorkflowsService
+        connection_params = {"host": self.endpoint, "verify_ssl": False}
+        if self.token:
+            connection_params["token"] = self.token
+        return WorkflowsService(**connection_params)
+
+    def get_status(self):
+        """Get the status of the workflow execution."""
+        return self.workflow_obj.status

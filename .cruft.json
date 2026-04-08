@@ -1,0 +1,20 @@
+{
+  "template": "ssh://git@gitlab.predictia.es:2224/python/cookiecutter-mamba-package-template.git",
+  "commit": "7d3b48f190b3426214912740b6d52bf9a779e14c",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "ingestion-pipeline",
+      "project_slug": "ingestion_pipeline",
+      "project_short_description": "Pipeline to download and homogenize OSCARS-RSOTC data",
+      "project_docker_base_image": "mambaorg/micromamba:1.5-jammy-cuda-12.2.2",
+      "copyright_holder": "European Union",
+      "copyright_year": "2024",
+      "mypy_strict": false,
+      "integration_tests": false,
+      "pypi": true,
+      "_template": "ssh://git@gitlab.predictia.es:2224/python/cookiecutter-mamba-package-template.git"
+    }
+  },
+  "directory": null
+}
