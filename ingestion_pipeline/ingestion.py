@@ -74,6 +74,10 @@ CDS_API_KEY = os.getenv("CDS_API_KEY")
 logger = logging.getLogger(__name__)
 
 
+class IngestionPipelineError(Exception):
+    """Custom exception for ingestion pipeline errors."""
+    pass
+
 class IngestionPipeline:
     """Manage downloading and processing of ERA5 data."""
 
@@ -179,6 +183,27 @@ class IngestionPipeline:
         except Exception:
             return True
 
+    def _check_missing_or_corrupted_downloads(self, requests: List[dict]) -> List[dict]:
+        """
+        Check if any request has not been downloaded properly (file missing or corrupted).
+
+        Parameters
+        ----------
+        requests : list of dict
+            The list of download requests to check.
+
+        Returns
+        -------
+        list of dict
+            The list of requests that were not downloaded properly.
+        """
+        failed_requests = []
+        for req in requests:
+            file_path = req["file"]
+            if not os.path.exists(file_path) or self._is_file_corrupted(file_path):
+                failed_requests.append(req)
+        return failed_requests
+
     def run_pipeline(self) -> tuple[xr.Dataset, dict[str, xr.Dataset]]:
         """
         Execute the download, homogenization, and aggregation pipeline.
@@ -261,35 +286,47 @@ class IngestionPipeline:
             )
             zarr_path_rs = self.s3_handler.get_s3_path(zarr_key_rs)
 
-            if (
-                not self.overwrite
-                and is_update
-                and self.s3_handler.check_zarr_exists(zarr_key_rs)
-            ):
-                # Standard update (append increment)
-                logger.info(f"Updating regional Zarr: {zarr_key_rs}")
-                dataset_regions = self.update_regions(zarr_key_rs, dataset, region_set)
+            # Get the complete historical dataset for deriving any missing regional data
+            source_ds_full = dataset_full if is_update else dataset
+
+            if not self.overwrite and self.s3_handler.check_zarr_exists(zarr_key_rs):
+                # Check the date range of the existing regional Zarr
+                metadata_rs = self.s3_handler.inspect_zarr_metadata_in_s3(zarr_path_rs)
+                attrs_rs = metadata_rs.get("attrs", {})
+                valid_range_rs = attrs_rs.get("dcterms:valid")
+                
+                if valid_range_rs and "/" in valid_range_rs:
+                    _, last_date_str_rs = valid_range_rs.split("/")
+                    last_date_rs = pd.to_datetime(last_date_str_rs)
+                else:
+                    # Fallback to reading the dataset if attributes are missing
+                    ds_rs = self.s3_handler.read_file(zarr_path_rs)
+                    last_date_rs = pd.to_datetime(ds_rs.time.values[-1])
+                    ds_rs.close()
+                
+                if last_date_rs >= pd.to_datetime(self.end_date):
+                    logger.info(f"Regional dataset {zarr_key_rs} is already up to date. Skipping.")
+                    continue
+                
+                increment_start = (last_date_rs + timedelta(days=1)).strftime("%Y-%m-%d")
+                logger.info(f"Updating regional Zarr: {zarr_key_rs} from {increment_start} to {self.end_date}")
+                
+                # Slice the full dataset to get exactly the missing increment
+                dataset_missing = source_ds_full.sel(time=slice(increment_start, self.end_date))
+                
+                if dataset_missing.time.size == 0:
+                     logger.info(f"No new data to append for regional Zarr {zarr_key_rs}. Skipping.")
+                     continue
+                
+                dataset_regions = self.update_regions(zarr_key_rs, dataset_missing, region_set)
                 if dataset_regions is None:
                     raise RuntimeError(f"Could not update regions {zarr_key_rs}")
+                datasets_regions[region_set] = dataset_regions
             else:
-                # Creation or Recovery
-                if (
-                    is_update
-                    and dataset_increment is not None
-                    and not self.s3_handler.check_zarr_exists(zarr_key_rs)
-                ):
-                    # Recovery: Gridded was updated, but regional is missing.
-                    # We need the full history from gridded Zarr (already loaded in dataset_full).
-                    logger.info(
-                        f"Recovering regional Zarr: {zarr_key_rs} from full gridded history."
-                    )
-                    source_ds = dataset_full
-                else:
-                    # New full run or increment-only aggregation
-                    logger.info(f"Writing fresh regional Zarr: {zarr_key_rs}")
-                    source_ds = dataset
-
-                dataset_regions = aggregate_regions(source_ds, region_set)  # type: ignore
+                # Creation or full overwrite
+                logger.info(f"Writing fresh regional Zarr: {zarr_key_rs}")
+                
+                dataset_regions = aggregate_regions(source_ds_full, region_set)  # type: ignore
                 dataset_regions.attrs["aggregation_method"] = (
                     f"Area-weighted averages for {region_set} regions "
                     "using GeoJSON definitions."
@@ -299,9 +336,9 @@ class IngestionPipeline:
                 dataset_regions = apply_dublin_core_metadata(
                     ds=dataset_regions,
                     variable_name=self.variable,
-                    start_date=source_ds.attrs.get("dcterms:valid", "").split("/")[0]
+                    start_date=source_ds_full.attrs.get("dcterms:valid", "").split("/")[0]
                     or self.start_date,
-                    end_date=source_ds.attrs.get("dcterms:valid", "").split("/")[1]
+                    end_date=source_ds_full.attrs.get("dcterms:valid", "").split("/")[1]
                     or self.end_date,
                     region_set=region_set,
                     area=self.area,
@@ -314,7 +351,18 @@ class IngestionPipeline:
                     output_path=zarr_path_rs,
                     overwrite=self.overwrite,
                 )
-            datasets_regions[region_set] = dataset_regions
+                datasets_regions[region_set] = dataset_regions
+        for region_set, ds_reg in datasets_regions.items():
+            ds_reg.close()
+        if is_update:
+            dataset_full.close()
+            if dataset_increment is not None:
+                dataset_increment.close()
+        else:
+            dataset.close()
+
+        self.cleanup_directories()
+
         return dataset_full if is_update else dataset, datasets_regions
 
     def update_gridded(
@@ -487,6 +535,13 @@ class IngestionPipeline:
             logger.error(f"Error updating dataset regions: {e}")
             return None
 
+    @retry(
+        retry=retry_if_exception_type(IngestionPipelineError),
+        wait=wait_exponential(multiplier=1, min=4, max=10),
+        stop=stop_after_attempt(3),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True,
+    )
     def download(self) -> list[str]:
         """
         Download ERA5 data based on the pipeline configuration.
@@ -516,6 +571,7 @@ class IngestionPipeline:
             wait=wait_exponential(multiplier=1, min=4, max=10),
             stop=stop_after_attempt(3),
             before_sleep=before_sleep_log(logger, logging.WARNING),
+            reraise=True,
         )
         def download_data(request):
             file_name = request["file"]
@@ -542,17 +598,36 @@ class IngestionPipeline:
                 os.remove(file_name)
                 raise RuntimeError(f"Downloaded file {file_name} is corrupted.")
 
+            if not os.path.exists(file_name):
+                raise RuntimeError(f"Downloaded file {file_name} does not exist.")
+
             return file_name
 
-        downloaded_files = []
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.max_workers
         ) as executor:
             futures = [executor.submit(download_data, request) for request in requests]
             for future in concurrent.futures.as_completed(futures):
-                downloaded_files.append(future.result())
+                try:
+                    future.result()
+                except Exception as e:
+                    logger.error(f"Error during parallel download attempt: {e}")
 
-        return downloaded_files
+        # Check if all files are downloaded properly
+        failed_requests = self._check_missing_or_corrupted_downloads(requests)
+        if failed_requests:
+            logger.warning(f"Total failed requests: {len(failed_requests)}")
+            for req in failed_requests:
+                file_path = req["file"]
+                if os.path.exists(file_path):
+                    logger.warning(f"Deleting failed/corrupted file: {file_path}")
+                    os.remove(file_path)
+            raise IngestionPipelineError(
+                f"Some files (n={len(failed_requests)}) failed to download or are corrupted. "
+                "Retrying the whole batch..."
+            )
+
+        return [req["file"] for req in requests]
 
     def homogenize(self, file_path: pathlib.Path):
         """
@@ -621,22 +696,49 @@ class IngestionPipeline:
 
     def cleanup_directories(self) -> None:
         """
-        Recursively remove empty directories within the saving_main_directory.
+        Recursively remove all files and directories within the saving_main_directory.
 
-        This method traverses the directory tree rooted at `self.saving_main_directory`
-        from the bottom up and removes any directories that do not contain any files
-        or subdirectories.
+        This method deletes all files in the directory tree rooted at
+        `self.saving_main_directory` and then removes the directories themselves.
         """
         base_dir = pathlib.Path(self.saving_main_directory)
-        logger.info(f"Starting cleanup of empty directories in {base_dir}")
+        logger.info(f"Starting cleanup of {base_dir}")
 
-        for root, _, _ in os.walk(base_dir, topdown=False):
-            dir_path = pathlib.Path(root)
-            try:
-                if not any(dir_path.iterdir()):  # Check if the directory is empty
-                    dir_path.rmdir()
-                    logger.info(f"Removed empty directory: {dir_path}")
-            except Exception as e:
-                logger.error(f"Failed to remove directory {dir_path}: {e}")
+        if not base_dir.exists():
+            logger.warning(f"Cleanup directory {base_dir} does not exist. Skipping.")
+            return
 
-        logger.info("Cleanup of empty directories completed.")
+        for root, dirs, files in os.walk(base_dir, topdown=False):
+            # Remove all files
+            for name in files:
+                file_path = pathlib.Path(root) / name
+                try:
+                    file_path.unlink()
+                    logger.debug(f"Deleted file: {file_path}")
+                except Exception as e:
+                    logger.error(f"Failed to delete file {file_path}: {e}")
+
+            # Remove all directories
+            for name in dirs:
+                dir_path = pathlib.Path(root) / name
+                try:
+                    # Check if the directory is empty before removing
+                    if not any(dir_path.iterdir()):
+                        dir_path.rmdir()
+                        logger.info(f"Removed empty directory: {dir_path}")
+                    else:
+                        logger.warning(
+                            f"Directory not empty, skipping removal: {dir_path}"
+                        )
+                except Exception as e:
+                    logger.error(f"Failed to remove directory {dir_path}: {e}")
+
+        # Finally, try to remove the base directory itself if it's empty
+        try:
+            if base_dir.exists() and not any(base_dir.iterdir()):
+                base_dir.rmdir()
+                logger.info(f"Removed base directory: {base_dir}")
+        except Exception as e:
+            logger.error(f"Failed to remove base directory {base_dir}: {e}")
+
+        logger.info("Cleanup completed.")
